@@ -1,0 +1,360 @@
+---
+#
+# The network connection profile provides client applications the information about the target
+# blockchain network that are necessary for the applications to interact with it. These are all
+# knowledge that must be acquired from out-of-band sources. This file provides such a source.
+#
+name: "Hospital-network"
+
+#
+# Any properties with an "x-" prefix will be treated as application-specific, exactly like how naming
+# in HTTP headers or swagger properties work. The SDK will simply ignore these fields and leave
+# them for the applications to process. This is a mechanism for different components of an application
+# to exchange information that are not part of the standard schema described below. In particular,
+# the "x-type" property with the "hlfv1" value example below is used by Hyperledger Composer to
+# determine the type of Fabric networks (v0.6 vs. v1.0) it needs to work with.
+#
+x-type: "hlfv2"
+
+#
+# Describe what the target network is/does.
+#
+description: "The hospital network"
+
+#
+# Schema version of the content. Used by the SDK to apply the corresponding parsing rules.
+#
+version: "1.0"
+
+client:
+  organization:
+    - hosp1
+    - hosp2
+    - hosp3
+
+#
+# [Optional]. But most apps would have this section so that channel objects can be constructed
+# based on the content below. If an app is creating channels, then it likely will not need this
+# section.
+#
+channels:
+  # name of the channel
+  hospitalchannel:
+    # Required. list of orderers designated by the application to use for transactions on this
+    # channel. This list can be a result of access control ("org1" can only access "ordererA"), or
+    # operational decisions to share loads from applications among the orderers.  The values must
+    # be "names" of orgs defined under "organizations/peers"
+    orderers:
+      - orderer0
+      - orderer2
+      - orderer3
+
+
+    # Required. list of peers from participating orgs
+    peers:
+      peer0-hosp1:
+        # [Optional]. will this peer be sent transaction proposals for endorsement? The peer must
+        # have the chaincode installed. The app can also use this property to decide which peers
+        # to send the chaincode install request. Default: true
+        endorsingPeer: true
+
+        # [Optional]. will this peer be sent query proposals? The peer must have the chaincode
+        # installed. The app can also use this property to decide which peers to send the
+        # chaincode install request. Default: true
+        chaincodeQuery: true
+
+        # [Optional]. will this peer be sent query proposals that do not require chaincodes, like
+        # queryBlock(), queryTransaction(), etc. Default: true
+        ledgerQuery: true
+
+        # [Optional]. will this peer be the target of the SDK's listener registration? All peers can
+        # produce events but the app typically only needs to connect to one to listen to events.
+        # Default: true
+        eventSource: true
+      peer0-hosp2:
+        # [Optional]. will this peer be sent transaction proposals for endorsement? The peer must
+        # have the chaincode installed. The app can also use this property to decide which peers
+        # to send the chaincode install request. Default: true
+        endorsingPeer: true
+
+        # [Optional]. will this peer be sent query proposals? The peer must have the chaincode
+        # installed. The app can also use this property to decide which peers to send the
+        # chaincode install request. Default: true
+        chaincodeQuery: true
+
+        # [Optional]. will this peer be sent query proposals that do not require chaincodes, like
+        # queryBlock(), queryTransaction(), etc. Default: true
+        ledgerQuery: true
+
+        # [Optional]. will this peer be the target of the SDK's listener registration? All peers can
+        # produce events but the app typically only needs to connect to one to listen to events.
+        # Default: true
+        eventSource: true
+      
+      peer0-hosp3:
+        # [Optional]. will this peer be sent transaction proposals for endorsement? The peer must
+        # have the chaincode installed. The app can also use this property to decide which peers
+        # to send the chaincode install request. Default: true
+        endorsingPeer: true
+
+        # [Optional]. will this peer be sent query proposals? The peer must have the chaincode
+        # installed. The app can also use this property to decide which peers to send the
+        # chaincode install request. Default: true
+        chaincodeQuery: true
+
+        # [Optional]. will this peer be sent query proposals that do not require chaincodes, like
+        # queryBlock(), queryTransaction(), etc. Default: true
+        ledgerQuery: true
+
+        # [Optional]. will this peer be the target of the SDK's listener registration? All peers can
+        # produce events but the app typically only needs to connect to one to listen to events.
+        # Default: true
+        eventSource: true
+
+#
+# list of participating organizations in this network
+#
+organizations:
+  hosp1:
+    mspid: HOSP1MSP
+
+    peers:
+      - peer0-hosp1
+
+    # [Optional]. Certificate Authorities issue certificates for identification purposes in a Fabric based
+    # network. Typically certificates provisioning is done in a separate process outside of the
+    # runtime network. Fabric-CA is a special certificate authority that provides a REST APIs for
+    # dynamic certificate management (enroll, revoke, re-enroll). The following section is only for
+    # Fabric-CA servers.
+    certificateAuthorities:
+      - ca-hosp1
+    adminPrivateKey:
+      path: /home/kubernetes-network/crypto-config/peerOrganizations/pk/users/Admin@pk/keystore/priv_sk
+    signedCert:
+      path: /home/kubernetes-network/crypto-config/peerOrganizations/pk/users/Admin@pk/signcerts/Admin@pk-cert.pem
+
+  hosp2:
+    mspid: HOSP2MSP
+
+    peers:
+      - peer0-hosp2
+
+    certificateAuthorities:
+      - ca-hosp2
+    adminPrivateKey:
+      path: /home/kubernetes-network/crypto-config/peerOrganizations/tr/users/Admin@tr/keystore/priv_sk
+    signedCert:
+      path: /home/kubernetes-network/crypto-config/peerOrganizations/tr/users/Admin@tr/signcerts/Admin@tr-cert.pem
+
+  hosp3:
+    mspid: HOSP3MSP
+
+    peers:
+      - peer0-hosp3
+
+    certificateAuthorities:
+      - ca-hosp3
+    adminPrivateKey:
+      path: /home/kubernetes-network/crypto-config/peerOrganizations/tr/users/Admin@tr/keystore/priv_sk
+    signedCert:
+      path: /home/kubernetes-network/crypto-config/peerOrganizations/tr/users/Admin@tr/signcerts/Admin@tr-cert.pem
+
+#
+# List of orderers to send transaction and channel create/update requests to. For the time
+# being only one orderer is needed. If more than one is defined, which one get used by the
+# SDK is implementation specific. Consult each SDK's documentation for its handling of orderers.
+#
+orderers:
+  orderer0:
+    url: grpcs://10.108.70.218:7050
+    tlsCACerts:
+      pem: |
+        -----BEGIN CERTIFICATE-----
+        MIICJDCCAcqgAwIBAgIRAPOQx+RqyIoC8JzOJDk8YfcwCgYIKoZIzj0EAwIwXDEL
+        MAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNhbiBG
+        cmFuY2lzY28xDDAKBgNVBAoTA2hibDESMBAGA1UEAxMJdGxzY2EuaGJsMB4XDTIw
+        MTIwNzA1MTgwMFoXDTMwMTIwNTA1MTgwMFowXDELMAkGA1UEBhMCVVMxEzARBgNV
+        BAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNhbiBGcmFuY2lzY28xDDAKBgNVBAoT
+        A2hibDESMBAGA1UEAxMJdGxzY2EuaGJsMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcD
+        QgAE6fHZg6W2oN+EXSo6N82PUsrPIcqfahFQNTsVN4yhLfrXHBg7I1UkI9ImqZVT
+        T3yOF66oG4WJOzFFWqGAPPlwpaNtMGswDgYDVR0PAQH/BAQDAgGmMB0GA1UdJQQW
+        MBQGCCsGAQUFBwMCBggrBgEFBQcDATAPBgNVHRMBAf8EBTADAQH/MCkGA1UdDgQi
+        BCD5frj6fO0cVJthlEQjhyQJ857sAcm2wzNzIbOBj+OQpzAKBggqhkjOPQQDAgNI
+        ADBFAiBu9JUwNnv+zB0LjqeZZbXGiYvABaczOXogGkTLQMXvMQIhALpT0ptw1OHD
+        TdZsn2lxbuhVIkyQSBjBccHPZQXICF0v
+        -----END CERTIFICATE-----
+
+    # these are standard properties defined by the gRPC library
+    # they will be passed in as-is to gRPC client constructor
+    grpcOptions:
+      ssl-target-name-override: orderer0
+
+#
+# List of peers to send various requests to, including endorsement, query
+# and event listener registration.
+#
+peers:
+  peer0-hosp1:
+    # this URL is used to send endorsement and query requests
+    url: localhost:7051
+    tlsCACerts:
+      pem: |
+        -----BEGIN CERTIFICATE-----
+        MIICIDCCAcWgAwIBAgIQJyapxGAVz7GZH+W6Bi/eHDAKBggqhkjOPQQDAjBaMQsw
+        CQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNU2FuIEZy
+        YW5jaXNjbzELMAkGA1UEChMCcGsxETAPBgNVBAMTCHRsc2NhLnBrMB4XDTIwMTIw
+        NzA1MTgwMFoXDTMwMTIwNTA1MTgwMFowWjELMAkGA1UEBhMCVVMxEzARBgNVBAgT
+        CkNhbGlmb3JuaWExFjAUBgNVBAcTDVNhbiBGcmFuY2lzY28xCzAJBgNVBAoTAnBr
+        MREwDwYDVQQDEwh0bHNjYS5wazBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABLvr
+        mARJhxuOYy/jIKX8zYZwh9tmPHX8F8QGkIidowl7q50YlxxHeifKf2+jMcFwarjp
+        jx967E6Ubj17sBON4/SjbTBrMA4GA1UdDwEB/wQEAwIBpjAdBgNVHSUEFjAUBggr
+        BgEFBQcDAgYIKwYBBQUHAwEwDwYDVR0TAQH/BAUwAwEB/zApBgNVHQ4EIgQgReXy
+        FZAA/KesswFSCy8xLXbLexFTzt2ZfTFtPbJekBAwCgYIKoZIzj0EAwIDSQAwRgIh
+        AKlK+rwEOw5PAK2ZN+yJe+bkp7f/acdpeaEd8VwlFKxgAiEAxXdm60PlkucMmQAM
+        XHJ3aozwc7siK/Z2IKjzx0H8tUo=
+        -----END CERTIFICATE-----
+    grpcOptions:
+      ssl-target-name-override: peer0-hosp1
+      request-timeout: 120001
+  peer0-hosp2:
+    # this URL is used to send endorsement and query requests
+    url: localhost:8051
+    tlsCACerts:
+      pem: |
+        -----BEGIN CERTIFICATE-----
+        MIICIDCCAcWgAwIBAgIQJyapxGAVz7GZH+W6Bi/eHDAKBggqhkjOPQQDAjBaMQsw
+        CQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNU2FuIEZy
+        YW5jaXNjbzELMAkGA1UEChMCcGsxETAPBgNVBAMTCHRsc2NhLnBrMB4XDTIwMTIw
+        NzA1MTgwMFoXDTMwMTIwNTA1MTgwMFowWjELMAkGA1UEBhMCVVMxEzARBgNVBAgT
+        CkNhbGlmb3JuaWExFjAUBgNVBAcTDVNhbiBGcmFuY2lzY28xCzAJBgNVBAoTAnBr
+        MREwDwYDVQQDEwh0bHNjYS5wazBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABLvr
+        mARJhxuOYy/jIKX8zYZwh9tmPHX8F8QGkIidowl7q50YlxxHeifKf2+jMcFwarjp
+        jx967E6Ubj17sBON4/SjbTBrMA4GA1UdDwEB/wQEAwIBpjAdBgNVHSUEFjAUBggr
+        BgEFBQcDAgYIKwYBBQUHAwEwDwYDVR0TAQH/BAUwAwEB/zApBgNVHQ4EIgQgReXy
+        FZAA/KesswFSCy8xLXbLexFTzt2ZfTFtPbJekBAwCgYIKoZIzj0EAwIDSQAwRgIh
+        AKlK+rwEOw5PAK2ZN+yJe+bkp7f/acdpeaEd8VwlFKxgAiEAxXdm60PlkucMmQAM
+        XHJ3aozwc7siK/Z2IKjzx0H8tUo=
+        -----END CERTIFICATE-----
+
+    grpcOptions:
+      ssl-target-name-override: peer0-hosp2
+      request-timeout: 120001
+  peer0-hosp3:
+    # this URL is used to send endorsement and query requests
+    url: localhost:9051
+    tlsCACerts:
+      pem: |
+        -----BEGIN CERTIFICATE-----
+        MIICHzCCAcagAwIBAgIRAOv46yhzWenLvmJcto9FwjwwCgYIKoZIzj0EAwIwWjEL
+        MAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNhbiBG
+        cmFuY2lzY28xCzAJBgNVBAoTAnRyMREwDwYDVQQDEwh0bHNjYS50cjAeFw0yMDEy
+        MDcwNTE4MDBaFw0zMDEyMDUwNTE4MDBaMFoxCzAJBgNVBAYTAlVTMRMwEQYDVQQI
+        EwpDYWxpZm9ybmlhMRYwFAYDVQQHEw1TYW4gRnJhbmNpc2NvMQswCQYDVQQKEwJ0
+        cjERMA8GA1UEAxMIdGxzY2EudHIwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAARs
+        Ual5PSVvG5W2G+tcayx1Th3puCBOgQ5T149VFyHw+7EmbyABx5XFuWMTi2IquA/K
+        s2ZKLxyGRMTJhSb702fRo20wazAOBgNVHQ8BAf8EBAMCAaYwHQYDVR0lBBYwFAYI
+        KwYBBQUHAwIGCCsGAQUFBwMBMA8GA1UdEwEB/wQFMAMBAf8wKQYDVR0OBCIEIF6L
+        z+kLC4r2PbO5SDPouQurmmBUL9+lzGa3j0PTXI2gMAoGCCqGSM49BAMCA0cAMEQC
+        IEeUbd9dAVC17A2Xa4KaFc/L6fEii9Y0IO4GdkYbIWDlAiB9G0P8j2HP8PI2Yltd
+        KRUL6argULRUtQGsRmw5j3K9gw==
+        -----END CERTIFICATE-----
+    grpcOptions:
+      ssl-target-name-override: peer0-hosp3
+      request-timeout: 120001
+# Fabric-CA is a special kind of Certificate Authority provided by Hyperledger Fabric which allows
+# certificate management to be done via REST APIs. Application may choose to use a standard
+# Certificate Authority instead of Fabric-CA, in which case this section would not be specified.
+#
+certificateAuthorities:
+  ca-hosp1:
+    url: localhost:7054
+    tlsCACerts:
+      pem: |
+        -----BEGIN CERTIFICATE-----
+        MIICGjCCAcCgAwIBAgIRAJ35QjAV0fY3f5Y7QBy4/ucwCgYIKoZIzj0EAwIwVzEL
+        MAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNhbiBG
+        cmFuY2lzY28xCzAJBgNVBAoTAnBrMQ4wDAYDVQQDEwVjYS5wazAeFw0yMDEyMDcw
+        NTE4MDBaFw0zMDEyMDUwNTE4MDBaMFcxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpD
+        YWxpZm9ybmlhMRYwFAYDVQQHEw1TYW4gRnJhbmNpc2NvMQswCQYDVQQKEwJwazEO
+        MAwGA1UEAxMFY2EucGswWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAAQGJK2+qHow
+        xSS4Lq0OaXJb+xHaIPCzEqbH7o+ndcIB7XKrJHlRpLS7pvubVVS/RaFcfs/23ppn
+        mkC0LJGQJbK4o20wazAOBgNVHQ8BAf8EBAMCAaYwHQYDVR0lBBYwFAYIKwYBBQUH
+        AwIGCCsGAQUFBwMBMA8GA1UdEwEB/wQFMAMBAf8wKQYDVR0OBCIEIGx7gtOZGjN/
+        OZXOhfMU+k4FqWo1/JoDMOrA7iSvP3NQMAoGCCqGSM49BAMCA0gAMEUCIQDSlaEx
+        mIGy6gv1uQ21G/8706ex1FSHhbeeMs1Vd/ipUQIgE/ACkCTwmSiL5L0dCd1jq858
+        CzAClxrOV/SK01i4FpI=
+        -----END CERTIFICATE-----
+    # the properties specified under this object are passed to the 'http' client verbatim when
+    # making the request to the Fabric-CA server
+    httpOptions:
+      verify: false
+
+    # Fabric-CA supports dynamic user enrollment via REST APIs. A "root" user, a.k.a registrar, is
+    # needed to enroll and invoke new users.
+    registrar:
+      - enrollId: admin
+        enrollSecret: adminpw
+    # [Optional] The optional name of the CA.
+    caName: ca-hosp1
+
+ca-hosp2:
+    url: localhost:8054
+    tlsCACerts:
+      pem: |
+        -----BEGIN CERTIFICATE-----
+        MIICGjCCAcCgAwIBAgIRAJ35QjAV0fY3f5Y7QBy4/ucwCgYIKoZIzj0EAwIwVzEL
+        MAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNhbiBG
+        cmFuY2lzY28xCzAJBgNVBAoTAnBrMQ4wDAYDVQQDEwVjYS5wazAeFw0yMDEyMDcw
+        NTE4MDBaFw0zMDEyMDUwNTE4MDBaMFcxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpD
+        YWxpZm9ybmlhMRYwFAYDVQQHEw1TYW4gRnJhbmNpc2NvMQswCQYDVQQKEwJwazEO
+        MAwGA1UEAxMFY2EucGswWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAAQGJK2+qHow
+        xSS4Lq0OaXJb+xHaIPCzEqbH7o+ndcIB7XKrJHlRpLS7pvubVVS/RaFcfs/23ppn
+        mkC0LJGQJbK4o20wazAOBgNVHQ8BAf8EBAMCAaYwHQYDVR0lBBYwFAYIKwYBBQUH
+        AwIGCCsGAQUFBwMBMA8GA1UdEwEB/wQFMAMBAf8wKQYDVR0OBCIEIGx7gtOZGjN/
+        OZXOhfMU+k4FqWo1/JoDMOrA7iSvP3NQMAoGCCqGSM49BAMCA0gAMEUCIQDSlaEx
+        mIGy6gv1uQ21G/8706ex1FSHhbeeMs1Vd/ipUQIgE/ACkCTwmSiL5L0dCd1jq858
+        CzAClxrOV/SK01i4FpI=
+        -----END CERTIFICATE-----
+    # the properties specified under this object are passed to the 'http' client verbatim when
+    # making the request to the Fabric-CA server
+    httpOptions:
+      verify: false
+
+    # Fabric-CA supports dynamic user enrollment via REST APIs. A "root" user, a.k.a registrar, is
+    # needed to enroll and invoke new users.
+    registrar:
+      - enrollId: admin
+        enrollSecret: adminpw
+    # [Optional] The optional name of the CA.
+    caName: ca-hosp2
+
+ca-hosp3:
+    url: localhost:9054
+    tlsCACerts:
+      pem: |
+        -----BEGIN CERTIFICATE-----
+        MIICGjCCAcCgAwIBAgIRAJ35QjAV0fY3f5Y7QBy4/ucwCgYIKoZIzj0EAwIwVzEL
+        MAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNhbiBG
+        cmFuY2lzY28xCzAJBgNVBAoTAnBrMQ4wDAYDVQQDEwVjYS5wazAeFw0yMDEyMDcw
+        NTE4MDBaFw0zMDEyMDUwNTE4MDBaMFcxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpD
+        YWxpZm9ybmlhMRYwFAYDVQQHEw1TYW4gRnJhbmNpc2NvMQswCQYDVQQKEwJwazEO
+        MAwGA1UEAxMFY2EucGswWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAAQGJK2+qHow
+        xSS4Lq0OaXJb+xHaIPCzEqbH7o+ndcIB7XKrJHlRpLS7pvubVVS/RaFcfs/23ppn
+        mkC0LJGQJbK4o20wazAOBgNVHQ8BAf8EBAMCAaYwHQYDVR0lBBYwFAYIKwYBBQUH
+        AwIGCCsGAQUFBwMBMA8GA1UdEwEB/wQFMAMBAf8wKQYDVR0OBCIEIGx7gtOZGjN/
+        OZXOhfMU+k4FqWo1/JoDMOrA7iSvP3NQMAoGCCqGSM49BAMCA0gAMEUCIQDSlaEx
+        mIGy6gv1uQ21G/8706ex1FSHhbeeMs1Vd/ipUQIgE/ACkCTwmSiL5L0dCd1jq858
+        CzAClxrOV/SK01i4FpI=
+        -----END CERTIFICATE-----
+    # the properties specified under this object are passed to the 'http' client verbatim when
+    # making the request to the Fabric-CA server
+    httpOptions:
+      verify: false
+
+    # Fabric-CA supports dynamic user enrollment via REST APIs. A "root" user, a.k.a registrar, is
+    # needed to enroll and invoke new users.
+    registrar:
+      - enrollId: admin
+        enrollSecret: adminpw
+    # [Optional] The optional name of the CA.
+    caName: ca-hosp3
